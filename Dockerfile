@@ -1,23 +1,28 @@
-FROM python:3.10-slim AS compile-image
-RUN apt-get update
-RUN apt-get install -y --no-install-recommends build-essential gcc
+# ------------------------------------------------------------------------------
+# Base image
+# ------------------------------------------------------------------------------
+FROM python:3.10-slim AS base
 
-RUN python -m venv /opt/venv
-# Make sure we use the virtualenv:
-ENV PATH="/opt/venv/bin:$PATH"
+# ------------------------------------------------------------------------------
+# Install dependencies
+# ------------------------------------------------------------------------------
+FROM base AS deps
+COPY requirements.txt ./
+RUN apt update > /dev/null && \
+        apt install -y build-essential && \
+        pip install --upgrade pip \
+        pip install --disable-pip-version-check -r requirements.txt
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+# ------------------------------------------------------------------------------
+# Final image
+# ------------------------------------------------------------------------------
+FROM base
+WORKDIR /usr/src/app
+COPY . /usr/src/app
 
-COPY setup.py .
-COPY app/ .
-RUN pip install .
-
-FROM python:3.10-slim AS build-image
-COPY --from=compile-image /opt/venv /opt/venv
-
-# Make sure we use the virtualenv:
-ENV PATH="/opt/venv/bin:$PATH"
+COPY --from=deps /root/.cache /root/.cache
+RUN pip install --disable-pip-version-check -r requirements.txt && \
+        rm -rf /root/.cache
 
 EXPOSE 5000
 
