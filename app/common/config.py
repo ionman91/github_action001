@@ -27,7 +27,7 @@ class LocalConfig(Config):
 
 @dataclass
 class ProdConfig(Config):
-    DB_URL: str = "mysql+pymysql://admin:qweasdzx@test-rds.ctnwpgtfxzsl.ap-northeast-2.rds.amazonaws.com:3306/test?charse=utf8mb4"
+    DB_URL: str = "mysql+pymysql://admin:qweasdzx@test-rds.ctnwpgtfxzsl.ap-northeast-2.rds.amazonaws.com:3306/test?charset=utf8mb4"
     TRUSTED_HOSTS = ["*"]
     ALLOW_SITE = ["*"]
 
