@@ -12,5 +12,8 @@ RUN pip install --user .
 FROM python:3.10-slim-buster AS build-image
 COPY --from=compile-image /root/.local /root/.local
 
-ENV PATH=/root/.local/bin:$PATH
+ENV PATH="/root/.local/bin:${PATH}"
+
+EXPOSE 5000
+
 CMD ["gunicorn", "--preload", "-c", "gunicorn.conf.py", "app.main:create_app()"]
