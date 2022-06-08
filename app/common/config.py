@@ -27,6 +27,7 @@ class LocalConfig(Config):
 
 @dataclass
 class ProdConfig(Config):
+    DB_URL: str = "mysql+pymysql://admin:qweasdzx@test-rds.ctnwpgtfxzsl.ap-northeast-2.rds.amazonaws.com:3306/test?charse=utf8mb4"
     TRUSTED_HOSTS = ["*"]
     ALLOW_SITE = ["*"]
 
@@ -45,4 +46,4 @@ def conf():
     :return:
     """
     config = dict(prod=ProdConfig, local=LocalConfig, test=TestConfig)
-    return config[environ.get("API_ENV", "local")]()
+    return config[environ.get("API_ENV", "prod")]()

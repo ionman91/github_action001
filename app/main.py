@@ -27,8 +27,8 @@ def create_app():
     conf_dict = asdict(c)
     db.init_app(app, **conf_dict)
     
-    # from app.database import schema
-    # schema.Base.metadata.create_all(bind=db.engine)
+    from app.database import schema
+    schema.Base.metadata.create_all(bind=db.engine)
 
     # 데이터 베이스 이니셜라이즈
 
