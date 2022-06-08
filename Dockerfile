@@ -9,7 +9,7 @@ COPY setup.py .
 COPY app/ .
 RUN pip install --user .
 
-FROM python:3.10-slilm-buster AS build-image
+FROM python:3.10-slim-buster AS build-image
 COPY --from=compile-image /root/.local /root/.local
 
 ENV PATH=/root/.local/bin:$PATH
