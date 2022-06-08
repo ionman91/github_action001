@@ -1,7 +1,7 @@
 # ------------------------------------------------------------------------------
 # Base image
 # ------------------------------------------------------------------------------
-FROM python:3.8-slim AS base
+FROM python:3.10 AS base
 
 # ------------------------------------------------------------------------------
 # Install dependencies
@@ -10,6 +10,7 @@ FROM base AS deps
 COPY requirements.txt ./
 RUN apt update > /dev/null && \
         apt install -y build-essential && \
+        pip install --upgrade pip \
         pip install --disable-pip-version-check -r requirements.txt
 
 # ------------------------------------------------------------------------------

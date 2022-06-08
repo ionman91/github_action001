@@ -36,6 +36,7 @@ class SQLAlchemy:
         :param kwargs:
         :return:
         """
+        print('kwargs=', kwargs)
         database_url = kwargs.get("DB_URL")
         pool_recycle = kwargs.setdefault("DB_POOL_RECYCLE", 900)
         is_testing = kwargs.setdefault("TEST_MODE", False)
@@ -49,9 +50,10 @@ class SQLAlchemy:
         )
         if is_testing:  # create schema
             db_url = self._engine.url
+            print('db_url=', db_url.drivername + db_url.username + db_url.host)
             if db_url.host != "localhost":
                 raise Exception("db host must be 'localhost' in test environment")
-            except_schema_db_url = f"{db_url.drivername}://{db_url.username}@{db_url.host}"
+            except_schema_db_url = f"{db_url.drivername}://{db_url.username}:1234@{db_url.host}:3306"
             schema_name = db_url.database
             temp_engine = create_engine(except_schema_db_url, echo=echo, pool_recycle=pool_recycle, pool_pre_ping=True)
             if _database_exist(temp_engine, schema_name):

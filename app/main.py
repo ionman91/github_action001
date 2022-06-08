@@ -26,6 +26,10 @@ def create_app():
     app = FastAPI()
     conf_dict = asdict(c)
     db.init_app(app, **conf_dict)
+    
+    # from app.database import schema
+    # schema.Base.metadata.create_all(bind=db.engine)
+
     # 데이터 베이스 이니셜라이즈
 
     # 레디스 이니셜라이즈
