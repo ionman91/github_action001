@@ -8,6 +8,11 @@ jobs:
         steps:
             - uses: actions/checkout@v1
 
+            - name: Set up Python 3.8
+              uses: actions/setup-python@v1
+              with:
+                  python-version: "3.10"
+
             # 배포를 하기 위한 zip 파일 생성
             - name: Generate deployment package
               run: zip -r deploy.zip .
@@ -15,16 +20,13 @@ jobs:
             - name: Get timestamp
               uses: gerred/actions/current-time@master
               id: current-time
-              with:
-                  format: YYYYMMDD_HH-mm-ss
-                  utcOffset: "+09:00"
 
             - name: Run string replace
               uses: frabert/replace-string-action@master
               id: format-time
               with:
                   pattern: '[:\.]+'
-                  string: "$"
+                  string: "${{ steps.current-time.outputs.time }}"
                   replace-with: "-"
                   flags: "g"
 
@@ -36,7 +38,7 @@ jobs:
                   application_name: jjoontopia-api
                   environment_name: jjoontopia-prd-api
                   region: ${{ secrets.AWS_REGION }}
-                  version_label: "my-${{ steps.current-time.outputs.formattedTime }}"
+                  version_label: "my-${{ steps.format-time.outputs.replaced }}"
                   deployment_package: deploy.zip
 
             - name: Deployed!

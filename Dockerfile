@@ -38,4 +38,6 @@ RUN pip3 install --upgrade pip \
 
 COPY . .
 
+EXPOSE 80
+
 CMD ["gunicorn", "--preload", "-c", "gunicorn.conf.py", "app.main:create_app()"]
