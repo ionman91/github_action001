@@ -1,18 +1,23 @@
-FROM python:3.10-slim-buster AS compile-image
+FROM python:3.10-slim AS compile-image
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends build-essential gcc
 
+RUN python -m venv /opt/venv
+# Make sure we use the virtualenv:
+ENV PATH="/opt/venv/bin:$PATH"
+
 COPY requirements.txt .
-RUN pip install --user -r requirements.txt
+RUN pip install -r requirements.txt
 
 COPY setup.py .
 COPY app/ .
-RUN pip install --user .
+RUN pip install .
 
-FROM python:3.10-slim-buster AS build-image
-COPY --from=compile-image /root/.local /root/.local
+FROM python:3.10-slim AS build-image
+COPY --from=compile-image /opt/venv /opt/venv
 
-ENV PATH="/root/.local/bin:${PATH}"
+# Make sure we use the virtualenv:
+ENV PATH="/opt/venv/bin:$PATH"
 
 EXPOSE 5000
 
