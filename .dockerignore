@@ -3,6 +3,7 @@
 .idea/
 README.md
 Dockerfile
+Dockerfile2
 __pycache__
 docker-compose.yml
 venv/

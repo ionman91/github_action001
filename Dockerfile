@@ -1,52 +1,16 @@
-# ------------------------------------------------------------------------------
-# Base image
-# ------------------------------------------------------------------------------
-# FROM python:3.10 AS base
+FROM python:3.10-slim-buster AS compile-image
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends build-essential gcc
 
-# ------------------------------------------------------------------------------
-# Install dependencies
-# ------------------------------------------------------------------------------
-# FROM base AS deps
-# COPY requirements.txt ./
-# RUN apt update > /dev/null && \
-#         apt install -y build-essential && \
-#         pip install --upgrade pip \
-#         pip install --disable-pip-version-check -r requirements.txt
+COPY requirements.txt .
+RUN pip install --user -r requirements.txt
 
-# # ------------------------------------------------------------------------------
-# # Final image
-# # ------------------------------------------------------------------------------
-# FROM base
-# WORKDIR /usr/src/app
-# COPY . /usr/src/app
+COPY setup.py .
+COPY app/ .
+RUN pip install --user .
 
-# COPY --from=deps /root/.cache /root/.cache
-# RUN pip install --disable-pip-version-check -r requirements.txt && \
-#         rm -rf /root/.cache
+FROM python:3.10-slilm-buster AS build-image
+COPY --from=compile-image /root/.local /root/.local
 
-# EXPOSE 5000
-
-# CMD ["gunicorn", "--preload", "-c", "gunicorn.conf.py", "app.main:create_app()"]
-
-FROM python:3.10-slim-buster
-
-# WORKDIR /app
-
-COPY requirements.txt ./
-RUN apt update > /dev/null && \
-        apt install -y build-essential && \
-        pip install --upgrade pip \
-        pip install --disable-pip-version-check -r requirements.txt
-
-WORKDIR /usr/src/app
-COPY . /usr/src/app
-
-COPY --from=deps /root/.cache /root/.cache
-RUN pip install --disable-pip-version-check -r requirements.txt && \
-        rm -rf /root/.cache
-
-# COPY . .
-
-EXPOSE 5000
-
+ENV PATH=/root/.local/bin:$PATH
 CMD ["gunicorn", "--preload", "-c", "gunicorn.conf.py", "app.main:create_app()"]
